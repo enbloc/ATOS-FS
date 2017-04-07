@@ -30,7 +30,7 @@ class Directory {
 		Directory() { int size = 0; }
 		Directory(string name, string path, string parentDirectory){
 			this->name = name;
-			this->path = path + "/" + name; // TODO HERE
+			this->path = path;// TODO HERE
 			this->parentDirectory = parentDirectory;
 			this->size = 0;
 		}
@@ -41,6 +41,8 @@ class Directory {
 		string  getPath() const { return path; }
 		string  getParentDirectory() const { return parentDirectory; }
 		int     getSize()       const { return size; }
+		int     incSize(int bytes) { size += bytes; return size; }
+		int     decSize(int bytes) { size -= bytes; return size; }
 		void    setName(string name) { this->name = name; }
 		void    setPath(string path) { this->path = path; }
 		void    setParentDirectory(string parentDirectory) { this->parentDirectory = parentDirectory; }

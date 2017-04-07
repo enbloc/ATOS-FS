@@ -46,14 +46,14 @@ class File {
 			this->lastModified = ctime(&rawtime);
 		}
 
-		File(string name, string path, string parentFolder){
+		File(string name, string path, string parent){
 			this->name = name;
 			this->path = path;
 			this->mode = "closed";
 			this->status = "closed";
 			this->start  = NULL;
 			this->end    = NULL;
-			this->parentFolder = parentFolder;
+			this->parent = parent;
 			this->size = 0;
 			time_t rawtime;
 			time(&rawtime);
@@ -253,15 +253,15 @@ class File {
 		string getPath() const { return path; }
 		string getMode() const { return mode; }
 		string getStatus()       const { return status; }
+		string getParentFolder() const { return parent; }
 		string getLastModified() const { return lastModified; }
-		string getParentFolder() const { return parentFolder; }
 		int    getSize()  const { return size;  }
 		Byte*  getStart() const { return start; }
 		Byte*  getEnd()   const { return end;   }
 		void   setName(string name) { this->name = name; }
 		void   setPath(string path) { this->path = path; }
 		void   setLastModified(string lm) { this->lastModified = lm; }
-		void   setParentFolder(string pf) { this->parentFolder = pf; }
+		void   setParentFolder(string pf) { this->parent = pf; }
 		void   setStart(Byte* start) { this->start = start; }
 		void   setEnd  (Byte* end)   { this->end   = end;   }
 		void   setSize(int size) { this->size = size; }
@@ -279,8 +279,8 @@ class File {
 		string path;
 		string mode;
 		string status;
+		string parent;
 		string lastModified;
-		string parentFolder;
 		Byte* start;
 		Byte* end;
 		int size;

@@ -121,6 +121,7 @@ bool Interface::dir(){
 	cout << "#####################################" << endl;
 	cout << "#     ATOS-FS Directory Listing     #" << endl;
 	cout << "#####################################" << endl;
+	cout << "--> CURRENT DIR: " << dir->getPath()   << endl;
 
 	// List directories first
 	if (!dirs.empty()){

@@ -44,6 +44,7 @@ void FileSystem::pathUtil(string path, string &objName, Directory* &parent, bool
 		objName = path;
 		parent = current;
 		cout << "Adding path to arg: " << path << " -> " << current->getPath() << "/" << path << endl;
+		path = current->getPath() + "/" + objName;
 
 	// Otherwise, assign the last token for the object name.
 	} else objName = path_tokens[path_tokens.size() - 1];
@@ -98,7 +99,7 @@ bool FileSystem::deleteFile(string path){
 	if (found){
 
 	    // Check to ensure file exists and is deleted
-	    File* file = getFile(path, filename);
+	    File* file = getFile(path);
 	    file->releaseData(disk, freespace);
 	    parent->removeFile(filename);
 	    for (int i = 0; i < files.size(); i++){
@@ -126,7 +127,7 @@ File* FileSystem::openFile(string path, string mode){
 
 	if (found){
 
-	    File* file = getFile(path, filename);
+	    File* file = getFile(path);
 	    file->open(mode);
 	    return file;
 
@@ -180,40 +181,47 @@ vector<string> FileSystem::listAllFiles(){
 }
 
 // Get a pointer to a specific file found under the given path.
-File* FileSystem::getFile(string path, string filename) {
+File* FileSystem::getFile(string path) {
 
-	// Crawl to find relevant directory
-	Directory* current_dir = root;
-	vector<string> path_tokens = parsePath(path);
-	if (path_tokens.size() > 1){
-	    for (int i = 0; i < path_tokens.size(); i++){
-	    	current_dir = current_dir->getDirectory(path_tokens[i]);
-	    	if (current_dir == NULL){
-	    		cerr << "Error retrieving file from directory" << endl;
-	    		break;
-	    	}
-	    }
+	bool found;
+	File* file;
+	string filename;
+	Directory* parent;
+
+	// Verify and assign values to variables
+	pathUtil(path, filename, parent, found);
+
+	if (found){
+
+	    file = parent->getFile(filename);
+	    return file;
+
+	} else {
+		cerr << "Error: Attempted to retrieve file that does not exist!" << endl;
+		return NULL;
 	}
-
-	// If the file is contained within the directory, return it.
-	File* file = current_dir->getFile(filename);
-	return file;
 }
 
 // Get a pointer to the specific directory found under the given path.
 Directory* FileSystem::getDirectory(string path) {
 
-	Directory* current_dir = root;
-	vector<string> path_tokens = parsePath(path);
-	for (int i = 1; i < path_tokens.size() - 1; i++){
-		current_dir = current_dir->getDirectory(path_tokens[i]);
-		if (current_dir == NULL){
-			cerr << "Error retrieving file from directory" << endl;
-			break;
-		}
-	}
+	bool found;
+	string dirname;
+	Directory* parent;
+	Directory* target;
 
-	return current_dir;
+	// Verify and assign values to variables
+	pathUtil(path, dirname, parent, found);
+
+	if (found){
+
+	    target = parent->getDirectory(dirname);
+	    return target;
+
+	} else {
+		cerr << "Error: Attempted to retrieve directory that does not exist!" << endl;
+		return NULL;
+	}
 }
 
 // Parse the given path into an array of directories
@@ -255,76 +263,71 @@ void FileSystem::initFreeSpace(int blocksize, int numblocks){
 // Set the current directory.
 Directory* FileSystem::changeDir(string path){
 
-	bool found = true;
-	Directory* current_dir = root;
-	vector<string> path_tokens = parsePath(path);
-	for (int i = 1; i < path_tokens.size(); i++){
-		if (current_dir->containsDirectory(path_tokens[i]))
-			current_dir = current_dir->getDirectory(path_tokens[i]);
-		else {
-			cerr << "Error: Directory does not exist at specified path!" << endl;
-			found = false;
-			break;
-		}
-	}
+	bool found;
+	string dirname;
+	Directory* parent;
+	Directory* target;
 
-	this->current = current_dir;
-	if (found) return current_dir;
-	else       return NULL;
+	// Verify and assign values to variables
+	pathUtil(path, dirname, parent, found);
+
+	if (found){
+
+	    target = parent->getDirectory(dirname);
+		this->current = target;
+	    return target;
+
+	} else {
+		cerr << "Error: Attempted to retrieve directory that does not exist!" << endl;
+		return NULL;
+	}
 }
 
 // Create a directory at the specified path.
 Directory* FileSystem::makeDir(string path){
 
-	bool found = true;
-	Directory* dir;
-	Directory* current_dir = root;
-	vector<string> path_tokens = parsePath(path);
-	for (int i = 1; i < path_tokens.size() - 1; i++){
-		if (current_dir->containsDirectory(path_tokens[i]))
-			current_dir = current_dir->getDirectory(path_tokens[i]);
-		else {
-			cerr << "Error: Directory does not exist at specified path!" << endl;
-			found = false;
-			break;
-		}
-	}
+	bool found;
+	string dirname;
+	Directory* parent;
+	Directory* newDir;
+
+	// Verify and assign values to variables
+	pathUtil(path, dirname, parent, found);
 
 	if (found){
-		dir = new Directory(path_tokens[path_tokens.size() - 1],
-					   		current_dir->getPath(),
-							current_dir->getName()); //TODO here
-		current_dir->addDirectory(dir);
-		return dir;
+
+		newDir = new Directory(dirname, 
+							   parent->getPath() + "/" + dirname,
+							   parent->getName());
+		parent->addDirectory(newDir);
+	    return newDir;
+
 	} else {
+		cerr << "Error: Invalid path!" << endl;
 		return NULL;
 	}
-
 }
 
 // Remove the directory at the specified path.
 Directory* FileSystem::removeDir(string path){
 	
-	bool found = true;
-	Directory* current_dir = root;
-	vector<string> path_tokens = parsePath(path);
-	for (int i = 1; i < path_tokens.size() - 1; i++){
-		if (current_dir->containsDirectory(path_tokens[i]))
-			current_dir = current_dir->getDirectory(path_tokens[i]);
-		else {
-			cerr << "Error: Directory does not exist at specified path!" << endl;
-			found = false;
-			break;
-		}
-	}
+	bool found;
+	string dirname;
+	Directory* parent;
+	Directory* target;
+
+	// Verify and assign values to variables
+	pathUtil(path, dirname, parent, found);
 
 	if (found){
-		current_dir->removeDirectory(path_tokens[path_tokens.size() - 1]);
-		return current_dir;
+
+	    parent->removeDirectory(dirname);
+	    return parent;
+
 	} else {
+		cerr << "Error: Attempted to retrieve directory that does not exist!" << endl;
 		return NULL;
 	}
-
 }
 
 // Getters and Setters

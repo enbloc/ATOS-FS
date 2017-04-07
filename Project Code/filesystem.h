@@ -43,7 +43,7 @@ class FileSystem {
 		vector<string> listAllFiles();
 
 		// Additional Class Methods
-		File*      getFile(string path, string filename);
+		File*      getFile(string path);
 		Directory* getDirectory(string path);
 		vector<string> parsePath(string path);
 		void pathSplit(string path, vector<string> &result);
