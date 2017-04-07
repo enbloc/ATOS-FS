@@ -30,7 +30,7 @@ class Directory {
 		Directory() { int size = 0; }
 		Directory(string name, string path, string parentDirectory){
 			this->name = name;
-			this->path = path;
+			this->path = path + "/" + name; // TODO HERE
 			this->parentDirectory = parentDirectory;
 			this->size = 0;
 		}
@@ -50,17 +50,24 @@ class Directory {
 		vector<Directory*> getDirectories() const { return directories; }
 		void addFile(File* newFile)               { this->files.push_back(newFile); }
 		void addDirectory(Directory* newDirectory) { this->directories.push_back(newDirectory); }
-		void removeFile(File* file){
+		void removeFile(string name){
 			
 			for (int i = 0; i < files.size(); i++){
-				if (files[i] == file){
+				if (name == files[i]->getName()){
 					files.erase(files.begin() + i);
 					break;
 				}
 			}
 		}
-		void removeDirectory(Directory* dir){
-
+		
+		void removeDirectory(string name){
+			
+			for (int i = 0; i < directories.size(); i++){
+				if (name == directories[i]->getName()){
+					directories.erase(directories.begin() + i);
+					break;
+				}
+			}
 		}
 
 		// Check to see if this directory contains specified directory.

@@ -24,83 +24,11 @@
  *
  */
 #include "filesystem.h"
+#include "interface.h"
 #include <iostream>
 #include <sstream>
+#include <cstring>
 using namespace std;
-
-/*
- * UI Functions
- */
-
-// Output a report about the current 
-// directory and disk information.
-bool report(FileSystem &fs){
-
-	int index = 1;
-	Directory* dir = fs.getRootDir();
-	vector<File*> files = dir->getFiles();
-	vector<Directory*> dirs = dir->getDirectories();
-
-	// Set up report format
-	cout << "#####################################" << endl;
-	cout << "#     ATOS-FS Directory Listing     #" << endl;
-	cout << "#####################################" << endl;
-
-	// List directories first
-	if (!dirs.empty()){
-		for (int i = 0; i < dirs.size(); i++){
-			cout << index 
-				 << ": [DIR] " << dirs[i]->getName() 
-				 << ", SIZE: " << dirs[i]->getSize() << endl;
-		   index++;	
-		}
-	}
-
-	// List files within folder
-	if (!files.empty()){
-		for (int i = 0; i < files.size(); i++){
-			cout << index 
-				 << ": "       << files[i]->getName() 
-				 << ", SIZE: " << files[i]->getSize() << endl; 
-			index++;
-		}
-	}
-
-	// Display disk stats
-	cout << endl;
-	cout << "-- FREE SPACE:   " << fs.getBytesOpen() << " bytes" << endl;
-    	cout << "-- TOTAL SPACE:  " << fs.getSize() << " bytes" << endl;
-	cout << "-- PERCENT FREE: " << (fs.getBytesOpen()/fs.getSize()) * 100 << "%" << endl;
-
-}
-
-// Edit file's contents by appending
-// terminal text to the file.
-bool edit(string filename, FileSystem &fs){
-
-	// Open the file.
-	File* handle = fs.openFile(filename, "root", "w");	
-
-	// Get multiline input
-	string input = "";
-	string line;
-
-	while(getline(cin, line)){
-
-		if (line != "exit")
-			input += line + '\n';
-		else 
-			break;
-	}
-
-	cout << "INPUT: " << input << endl;
-	return true;
-}
-
-// Output the contents of a file.
-bool print(string file, FileSystem &fs){
-
-}
 
 int main(int argc, char *argv[]){
 
@@ -114,7 +42,8 @@ int main(int argc, char *argv[]){
 		if (argc == 1){
 
 			cout << "Running ATOS in CLI mode..." << endl;
-			FileSystem fs(20, 20);
+			FileSystem* fs = new FileSystem(20, 20);
+			Interface*  ui = new Interface(fs);
 			bool EXIT = false;
 
 			// Set up prompt.
@@ -134,40 +63,37 @@ int main(int argc, char *argv[]){
 				while (getline(ss, token, ' '))
 					tokens.push_back(token);
 
-				for (int i = 0; i < tokens.size(); i++){
-				    cout << "Token[" << i << "]: " << tokens[i] << endl;
+			    if (tokens[0] == "create"){
+			    			result = ui->create(tokens[1]); // TODO Screen to see if contains "/"
+
+			    } else if (tokens[0] == "delete"){ 
+			    			result = ui->remove(tokens[1]); // TODO Screen to see if contains "/"
+
+			    } else if (tokens[0] == "dir"){ 
+			    			result = ui->dir();  
+
+			    } else if (tokens[0] == "edit"){ 
+			    			result = ui->edit(tokens[1]); 
+
+			    } else if (tokens[0] == "type"){ 
+			    			result = ui->type(tokens[1]); 
+
+			    } else if (tokens[0] == "cd"){ 
+			    			result = ui->cd(tokens[1]); 
+
+			    } else if (tokens[0] == "mkdir"){ 
+			    			result = ui->mkdir(tokens[1]); 
+
+			    } else if (tokens[0] == "rmdir"){ 
+			    			result = ui->rmdir(tokens[1]); 
+
+			    } else if (tokens[0] == "exit"){ 
+			    			EXIT = true;
+
+			    } else{ 
+			    			// Do nothing.
+
 				}
-
-					if (tokens[0] == "create"){
-								// Create file in the current directory, or another path if contains "/"
-								result = fs.createFile(tokens[1]); // TODO Screen to see if contains "/"
-
-					} else if (tokens[0] == "delete"){ 
-								// Delete file in the current directory, or another path if contains "/"
-								result = fs.deleteFile(tokens[1]); // TODO Screen to see if contains "/"
-
-					} else if (tokens[0] == "dir"){ 
-								// Print report, including current directory info, free space, and file sizes
-								result = report(fs);  // TODO Build function
-
-					} else if (tokens[0] == "edit"){ 
-								// Append text entered from command line to the specified file
-								result = edit(tokens[1], fs); // TODO Build function
-
-					} else if (tokens[0] == "type"){ 
-								// Output the contents of the file to the screen
-								result = print(tokens[1], fs); // TODO Build function
-
-					} else if (tokens[0] == "exit"){ 
-								// Terminate the program
-								EXIT = true;
-					} else{ 
-								// Do nothing.
-
-				}
-
-
-				cout << "FLAG" << endl;
 
 			}
 

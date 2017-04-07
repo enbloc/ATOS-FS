@@ -35,7 +35,7 @@ class FileSystem {
 		// Required API Methods
 		bool  createFile(string path);
 		bool  deleteFile(string path);
-		File* openFile  (string filename, string path, string mode);
+		File* openFile  (string path, string mode);
 		bool  closeFile(File* handle);
 		int   readFile (File* handle, int numchars, char *buffer);
 		int   writeFile(File* handle, int humchars, char *buffer);
@@ -48,6 +48,7 @@ class FileSystem {
 		vector<string> parsePath(string path);
 		void pathSplit(string path, vector<string> &result);
 		void initFreeSpace(int blocksize, int numblocks);
+		void pathUtil(string path, string &objName, Directory* &parent, bool &found);
 		
 		// Getters and Setters
 		int getSize() const;
@@ -56,6 +57,9 @@ class FileSystem {
 		Directory* getRootDir() const;
 		Directory* getCurrentDir() const;
 		DiskProcessType* getDisk() const;
+		Directory* changeDir (string path);
+		Directory* makeDir   (string path);
+		Directory* removeDir (string path);
 
 	private:
 

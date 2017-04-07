@@ -242,8 +242,8 @@ class File {
 				Byte* filePtr = start;
 				while(filePtr){
 					freespace.push_back(filePtr);
-					if (filePtr->next != NULL)
-						break;
+					if (filePtr->next == NULL) break;
+					else filePtr = filePtr->next;
 				}
 			}
 		}

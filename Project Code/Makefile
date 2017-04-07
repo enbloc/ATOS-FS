@@ -5,15 +5,15 @@
 #
 # A List of all the source files that should be compiled together
 #
-SOURCES = diskprocess.cpp driver.cpp filesystem.cpp
+SOURCES = diskprocess.cpp driver.cpp filesystem.cpp interface.cpp
 #
 # A list of the objects that result from the compilation process
 #
-OBJECTS = diskprocess.o driver.o filesystem.o
+OBJECTS = diskprocess.o driver.o filesystem.o interface.o
 #
 # A list of include files on which theh compilation depends
 #
-DEFS = diskprocess.h directory.h file.h filesystem.h
+DEFS = diskprocess.h directory.h file.h filesystem.h interface.h
 #
 # What flags to send to the compiler when you compile source files
 #
