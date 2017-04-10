@@ -25,9 +25,13 @@
  */
 #include "filesystem.h"
 #include "interface.h"
+#include <unistd.h>
 #include <iostream>
 #include <sstream>
 #include <cstring>
+#include <Awesomium/WebCore.h>
+#include <Awesomium/STLHelpers.h>
+#include "application.h"
 using namespace std;
 
 int main(int argc, char *argv[]){
@@ -64,10 +68,10 @@ int main(int argc, char *argv[]){
 					tokens.push_back(token);
 
 			    if (tokens[0] == "create"){
-			    			result = ui->create(tokens[1]); // TODO Screen to see if contains "/"
+			    			result = ui->create(tokens[1]); 
 
 			    } else if (tokens[0] == "delete"){ 
-			    			result = ui->remove(tokens[1]); // TODO Screen to see if contains "/"
+			    			result = ui->remove(tokens[1]); 
 
 			    } else if (tokens[0] == "dir"){ 
 			    			result = ui->dir();  
@@ -104,6 +108,32 @@ int main(int argc, char *argv[]){
 			
 			// Awesomium implementation goes here.
 			cout << "Running ATOS in GUI mode..." << endl;
+
+			//Awesomium::WebCore* web_core = Awesomium::WebCore::Initialize(Awesomium::WebConfig());
+			//web_core->set_surface_factory(new GLTextureSurfaceFactory());
+			//Awesomium::WebView* view = web_core->CreateWebView(500, 500);
+			//Awesomium::WebURL url(Awesomium::WSLit("file:///home/gabriel/Workspace/ATOS-FS/UI Code/index.html"));
+			//view->LoadURL(url);
+
+
+			//while (view->IsLoading())
+			//	web_core->Update();
+
+			//sleep(300);
+			//web_core->Update();
+
+
+			//Awesomium::WebCore::Shutdown();
+
+
+			Application app;
+
+			while (!app.isReadyToQuit())
+					app.update();
+
+
+
+
 			
 		}
 

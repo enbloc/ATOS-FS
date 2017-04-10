@@ -43,7 +43,6 @@ void FileSystem::pathUtil(string path, string &objName, Directory* &parent, bool
 	if (slash_num == string::npos){ 
 		objName = path;
 		parent = current;
-		cout << "Adding path to arg: " << path << " -> " << current->getPath() << "/" << path << endl;
 		path = current->getPath() + "/" + objName;
 
 	// Otherwise, assign the last token for the object name.
@@ -51,7 +50,7 @@ void FileSystem::pathUtil(string path, string &objName, Directory* &parent, bool
 		
 	// Traverse through the directory by following the path,
 	// breaking at any point at which the path token does not exist.
-	for (int i = 1; i < path_tokens.size() - 1; i++){
+	for (int i = 2; i < path_tokens.size() - 1; i++){
 		if (parent->containsDirectory(path_tokens[i]))
 			parent = parent->getDirectory(path_tokens[i]);
 		else {
@@ -101,7 +100,8 @@ bool FileSystem::deleteFile(string path){
 	    // Check to ensure file exists and is deleted
 	    File* file = getFile(path);
 	    file->releaseData(disk, freespace);
-	    parent->removeFile(filename);
+		parent->decSize(file->getSize());		// TODO Set up way to return blocks in destructor
+	    parent->removeFile(filename);			// TODO JUST SET UP ALL DESTRUCTORS
 	    for (int i = 0; i < files.size(); i++){
 	     	if (files[i]->getName() == filename){
 	       		files.erase(files.begin() + i);                 
@@ -156,8 +156,10 @@ int FileSystem::writeFile(File* handle, int numchars, char *buffer){
 
 	if (handle->getStatus() == "open" && 
 		handle->getMode()   == "w"){
+		int bytes_written = handle->write(numchars, buffer, disk, freespace);
+		current->incSize(bytes_written);
+		return bytes_written;
 
-			return handle->write(numchars, buffer, disk, freespace);
 	} else {
 		cerr << "Error: Cannot write to file, invalid mode" << endl;
 		return -1;
@@ -273,8 +275,15 @@ Directory* FileSystem::changeDir(string path){
 
 	if (found){
 
-	    target = parent->getDirectory(dirname);
-		this->current = target;
+		if (path == "/root"){
+			this->current = root;
+			target = root;			
+
+		} else {
+	    	target = parent->getDirectory(dirname);
+			if (target != NULL) this->current = target;
+		}
+
 	    return target;
 
 	} else {
@@ -320,7 +329,7 @@ Directory* FileSystem::removeDir(string path){
 	pathUtil(path, dirname, parent, found);
 
 	if (found){
-
+		
 	    parent->removeDirectory(dirname);
 	    return parent;
 

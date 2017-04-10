@@ -26,6 +26,7 @@
 #define SUCCESS_RETURN 0
 
 #include <fstream>
+#include <vector>
 using namespace std;
 
 // This class define what a bock on a disk is
