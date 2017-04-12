@@ -30,6 +30,14 @@ FileSystem::FileSystem(int blocksize, int numblocks){
 	initFreeSpace(blocksize, numblocks);
 }
 
+// Destructor
+FileSystem::~FileSystem(){
+
+	delete disk;
+	delete root;
+	delete current;
+}
+
 // Path utility function that makes hooking up to all of the necessary object pointers easy.
 void FileSystem::pathUtil(string path, string &objName, Directory* &parent, bool &found){
 	
@@ -74,7 +82,7 @@ bool FileSystem::createFile(string path){
 	if (found){
 
 	    // Check to ensure file does not exist and is added
-	    File* file = new File(filename, path, parent->getName());
+	    File* file = new File(filename, path, parent->getName(), disk, freespace);
 	    parent->addFile(file);
 	    files.push_back(file);
 	    return true;
@@ -155,10 +163,16 @@ int FileSystem::readFile(File* handle, int numchars, char *buffer){
 int FileSystem::writeFile(File* handle, int numchars, char *buffer){
 
 	if (handle->getStatus() == "open" && 
-		handle->getMode()   == "w"){
+		handle->getMode()   == "w"    && 
+		numchars < freespace.size()){
+	
 		int bytes_written = handle->write(numchars, buffer, disk, freespace);
 		current->incSize(bytes_written);
 		return bytes_written;
+
+	} else if (numchars > freespace.size()){
+		cerr << "Error: Insufficient disk space for input." << endl;
+		return -1;
 
 	} else {
 		cerr << "Error: Cannot write to file, invalid mode" << endl;
@@ -330,6 +344,7 @@ Directory* FileSystem::removeDir(string path){
 
 	if (found){
 		
+
 	    parent->removeDirectory(dirname);
 	    return parent;
 

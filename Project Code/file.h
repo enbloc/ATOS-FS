@@ -36,7 +36,7 @@ class File {
 
 		// Constructors
 		File();
-		File(string name, string path, string parent);
+		File(string name, string path, string parent, DiskProcessType* &disk, list<Byte*> &freespace);
 		~File();
 
 		// Class methods //
@@ -75,6 +75,8 @@ class File {
 		string status;
 		string parent;
 		string lastModified;
+		DiskProcessType* disk;
+		list<Byte*>* freespace;
 		Byte* start;
 		Byte* end;
 		int size;

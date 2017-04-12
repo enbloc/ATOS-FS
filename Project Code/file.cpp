@@ -31,17 +31,19 @@ File::File() {
 	this->lastModified = ctime(&rawtime);
 }
 
-File::File(string name, string path, string parent){
-	this->name = name;
-	this->path = path;
-	this->mode = "closed";
+File::File(string name, string path, string parent, DiskProcessType* &disk, list<Byte*> &freespace){
+	this->name   = name;
+	this->path   = path;
+	this->mode   = "closed";
 	this->status = "closed";
 	this->start  = NULL;
 	this->end    = NULL;
 	this->parent = parent;
+	this->disk   = disk;
 	this->size = 0;
 	time_t rawtime;
 	time(&rawtime);
+	this->freespace = &freespace;
 	this->lastModified = ctime(&rawtime);
 }
 

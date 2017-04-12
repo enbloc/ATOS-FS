@@ -92,7 +92,7 @@ Application::Application() :
   webCore = Awesomium::WebCore::Initialize(conf);
   webCore->set_surface_factory(new GLTextureSurfaceFactory());
 
-  addWebTileWithURL("file:///home/gabriel/Workspace/ATOS-FS/UI-Code/index.html", WIDTH, HEIGHT);
+  addWebTileWithURL("file:///home/gabriel/workspace/ATOS-FS/UI-Code/index.html", WIDTH, HEIGHT);
 
   // Set our first WebTile as active
   activeWebTile = 0;

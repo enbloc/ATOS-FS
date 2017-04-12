@@ -27,7 +27,23 @@ Directory::Directory(string name, string path, string parentDirectory){
 	this->parentDirectory = parentDirectory;
 	this->size = 0;
 }
-Directory::~Directory(){}
+
+// Destructor
+Directory::~Directory(){
+
+	// Clean up files in directory.
+	for (auto it = files.begin(); it != files.end(); it++){
+		delete *it;
+	}
+	files.clear();
+
+	// Clean up directories contained in the directory
+	for (auto it = directories.begin(); it != directories.end(); it++){
+		delete *it;
+	}
+	directories.clear();
+	
+}
 
 // Getters and Setters
 string  Directory::getName() const { return name; }

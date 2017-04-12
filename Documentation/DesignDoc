@@ -1,0 +1,23 @@
+Project Design Documentation
+
+Design Issues:
+
+1. Filesystem Structure: 
+The filesystem must be able to manage all aspects of the file and directory structure on the disk, including file creation/deletion/manipulation, the organization of the files into easily accesible directories, and disk space management. It must be modular, simple to use, and incur minimal overhead. 
+
+2. File Structure
+
+
+3. Directory Structure
+
+4. Interface
+
+5. Freespace 
+
+
+
+The primary components for the ATOS file system will be implemented as follows:
+
+1. Filesystem Design Solution:
+In response to the numerous and varied requirements for the filesystem, the filesystem class will serve as the de facto resource manager and handle high-level file and directory manipulation methods, but will leave the low-level disk manipulation to purpose-built file and directory classes. It will also contain pointers to the disk (as specified by the DiskProcessType class) and a data structure that manages the free memory addresses on the disk. By designing the filesystem in this way, the 
+

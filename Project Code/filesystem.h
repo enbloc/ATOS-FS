@@ -30,7 +30,7 @@ class FileSystem {
 
 		// Constructors
 		FileSystem(int blocksize, int numblocks);
-		~FileSystem(){}
+		~FileSystem();
 
 		// Required API Methods
 		bool  createFile(string path);
